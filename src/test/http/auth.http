@@ -3,9 +3,33 @@ POST http://localhost:8080/auth/signup
 Content-Type: application/json
 
 {
-  "username": "usr",
-  "email": "usr@example.com",
-  "password": "wowowow"
+  "username": "ivan_science",
+  "email": "ivan@example.com",
+  "password": "securePassword123",
+  "firstName": "Иван",
+  "lastName": "Иванов",
+  "patronymic": "Иванович",
+  "birthDate": "1995-05-20",
+  "cityId": 1,
+  "tags": ["java", "physics", "research"],
+  "education": [
+    {
+      "organizationId": 1,
+      "level": "BACHELOR",
+      "fieldOfStudy": "Ядерная физика",
+      "startDate": "2013-09-01",
+      "endDate": "2017-06-30"
+    }
+  ],
+  "career": [
+    {
+      "organizationId": 2,
+      "title": "Junior Researcher",
+      "startDate": "2018-01-15",
+      "isCurrent": true,
+      "description": "Работа над квантовыми вычислениями"
+    }
+  ]
 }
 
 ###
@@ -13,8 +37,8 @@ POST http://localhost:8080/auth/signin
 Content-Type: application/json
 
 {
-  "username": "usr",
-  "password": "wowowow"
+  "username": "ivan_science",
+  "password": "securePassword123"
 }
 
 ###
