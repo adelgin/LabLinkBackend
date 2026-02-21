@@ -1,5 +1,6 @@
 package org.example.lablinkbackend.config.security.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import org.example.lablinkbackend.common.exception.UserAlreadyExistsException;
 import org.example.lablinkbackend.config.security.component.JwtCore;
 import org.example.lablinkbackend.config.security.service.AuthService;
@@ -38,6 +39,10 @@ public class AuthController {
         this.authService = authService;
     }
 
+    @Operation(
+            summary = "Авторизация",
+            description = "Возвращает JWT токен"
+    )
     @PostMapping("/signin")
     ResponseEntity<?> signIn(@RequestBody SignInRequest signInRequest) {
         Authentication authentication = null;
@@ -53,6 +58,10 @@ public class AuthController {
         return ResponseEntity.ok(jwt);
     }
 
+    @Operation(
+            summary = "Регистрация",
+            description = "Возвращает сообщение о успешной регистрации, либо ошибку выполнения"
+    )
     @PostMapping("/signup")
     ResponseEntity<?> signUp(@RequestBody SignUpRequest signUpRequest) {
         if (userRepository.existsUserByUsername(signUpRequest.getUsername())) {

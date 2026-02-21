@@ -1,0 +1,3 @@
+###
+GET http://localhost:8080/api/users/ivan_science
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJpdmFuX3NjaWVuY2UiLCJpYXQiOjE3NzE3MTQ2ODUsImV4cCI6MTc3MTcxNDc0NX0.6-37qIhKvEtRH1bght3Xit-ceo1rWXszjteiUnXi1SM

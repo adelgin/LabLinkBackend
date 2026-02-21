@@ -1,7 +1,10 @@
 package org.example.lablinkbackend.domain.career.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import org.example.lablinkbackend.domain.organization.model.entity.Organization;
 import org.example.lablinkbackend.domain.user.model.entity.User;
 
@@ -17,6 +20,9 @@ public class CareerExperience {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @JsonIgnore
     private User user;
 
     @ManyToOne(fetch = FetchType.EAGER)

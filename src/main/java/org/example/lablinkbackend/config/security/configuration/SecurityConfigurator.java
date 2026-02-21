@@ -5,6 +5,7 @@ import org.example.lablinkbackend.domain.user.service.UserService;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
@@ -64,7 +65,13 @@ public class SecurityConfigurator {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers(
+                                    "/v3/api-docs/**",
+                                    "/swagger-ui/**",
+                                    "/swagger-ui.html"
+                                ).permitAll()
                         .requestMatchers("/auth/**").permitAll()
+//                        .requestMatchers(HttpMethod.GET, "/api/users/**").permitAll()
 //                        .requestMatchers("/auth/**").fullyAuthenticated()
                         .anyRequest().permitAll()
                 )

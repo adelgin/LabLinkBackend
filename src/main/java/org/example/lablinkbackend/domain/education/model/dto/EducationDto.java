@@ -8,7 +8,8 @@ import java.time.LocalDate;
 @Data
 public class EducationDto {
     private Long organizationId;
-    private EducationLevel level;
+    private String organizationName;
+    private EducationLevel degree;
     private String fieldOfStudy;
     private LocalDate startDate;
     private LocalDate endDate;

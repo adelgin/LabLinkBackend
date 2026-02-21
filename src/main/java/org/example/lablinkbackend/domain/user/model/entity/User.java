@@ -3,12 +3,15 @@ package org.example.lablinkbackend.domain.user.model.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import org.example.lablinkbackend.domain.career.model.entity.CareerExperience;
+import org.example.lablinkbackend.domain.education.model.entity.Education;
 import org.example.lablinkbackend.domain.geo.model.entity.City;
 import org.example.lablinkbackend.domain.tags.model.entity.Tag;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.SoftDelete;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -62,6 +65,12 @@ public class User {
 
     @Column(name = "is_deleted")
     private boolean isDeleted = false;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<Education> education;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<CareerExperience> career;
 
     @PrePersist
     protected void onCreate() {

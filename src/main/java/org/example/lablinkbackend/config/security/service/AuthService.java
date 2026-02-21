@@ -85,7 +85,7 @@ public class AuthService {
                     Education edu = new Education();
                     edu.setUser(savedUser);
                     edu.setFieldOfStudy(eduDto.getFieldOfStudy());
-                    edu.setDegree(eduDto.getLevel());
+                    edu.setDegree(eduDto.getDegree());
                     edu.setStartDate(eduDto.getStartDate());
                     edu.setEndDate(eduDto.getEndDate());
                     edu.setOrganization(organizationRepository.findById(eduDto.getOrganizationId())

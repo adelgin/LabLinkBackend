@@ -40,6 +40,3 @@ Content-Type: application/json
   "username": "ivan_science",
   "password": "securePassword123"
 }
-
-###
-GET http://localhost:8080/secured/user
