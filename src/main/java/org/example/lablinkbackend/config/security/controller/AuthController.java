@@ -22,10 +22,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
-    private UserRepository userRepository;
-    private AuthenticationManager authenticationManager;
-    private JwtCore jwtCore;
-    private AuthService authService;
+    private final UserRepository userRepository;
+    private final AuthenticationManager authenticationManager;
+    private final JwtCore jwtCore;
+    private final AuthService authService;
 
     public AuthController(
             UserRepository userRepository,
