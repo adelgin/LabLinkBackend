@@ -1,4 +1,4 @@
-###
+### Запрос на регистрацию (deprecated)
 POST http://localhost:8080/auth/signup
 Content-Type: application/json
 
@@ -32,11 +32,83 @@ Content-Type: application/json
   ]
 }
 
-###
-POST http://localhost:8080/auth/signin
+### Авторизация
+POST http://localhost:8081/auth/signin
 Content-Type: application/json
 
 {
-  "username": "ivan_science",
+  "username": "ivan_test_user",
   "password": "securePassword123"
 }
+
+### Запрос на регистрацию с научными статьями
+POST http://localhost:8081/auth/signup
+Content-Type: application/json
+
+{
+  "username": "ivan_test_user",
+  "email": "ivan_test_user@example.com",
+  "password": "securePassword123",
+  "firstName": "Иван",
+  "lastName": "Иванов",
+  "patronymic": "Иванович",
+  "birthDate": "1995-05-20",
+  "cityId": 1,
+  "tags": ["java", "physics", "research"],
+  "education": [
+    {
+      "organizationId": 1,
+      "level": "BACHELOR",
+      "fieldOfStudy": "Ядерная физика",
+      "startDate": "2013-09-01",
+      "endDate": "2017-06-30"
+    }
+  ],
+  "career": [
+    {
+      "organizationId": 2,
+      "title": "Junior Researcher",
+      "startDate": "2018-01-15",
+      "isCurrent": true,
+      "description": "Работа над квантовыми вычислениями"
+    }
+  ],
+  "publications": [
+    {
+      "doi": "10.1016/j.physletb.2023.123456",
+      "journalTitle": "Physics Letters B",
+      "source": "Elsevier",
+      "title": "Quantum Entanglement in High-Energy Physics",
+      "description": "Исследование квантовой запутанности в условиях высоких энергий",
+      "url": "https://doi.org/10.1016/j.physletb.2023.123456",
+      "year": 2023,
+      "coAuthors": []
+    },
+    {
+      "doi": "10.1103/PhysRevD.107.054501",
+      "journalTitle": "Physical Review D",
+      "source": "APS",
+      "title": "Lattice QCD Simulations at Finite Temperature",
+      "description": "Моделирование квантовой хромодинамики на решетке",
+      "url": "https://doi.org/10.1103/PhysRevD.107.054501",
+      "year": 2024,
+      "coAuthors": [
+        {
+          "userId": 2,
+          "authorOrder": 2,
+          "isCorrespondingAuthor": false
+        }
+      ]
+    },
+    {
+      "title": "Препринт: Новые подходы в машинном обучении для физики частиц",
+      "description": "Обзор современных методов ML в физике высоких энергий",
+      "year": 2024,
+      "coAuthors": []
+    }
+  ]
+}
+
+###
+GET http://localhost:8081/api/users/ivan_test_user
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJpdmFuX3Rlc3RfdXNlciIsImlhdCI6MTc3NDc5MDc0NCwiZXhwIjoxNzc0NzkwODA0fQ.BYpIuVbo83sm5I5jSR6cfim8KNq5Bdw2qwN7xQz1GQY

@@ -2,17 +2,20 @@ package org.example.lablinkbackend.domain.user.model.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
-
+import lombok.ToString;
 import org.example.lablinkbackend.domain.career.model.entity.CareerExperience;
 import org.example.lablinkbackend.domain.education.model.entity.Education;
 import org.example.lablinkbackend.domain.geo.model.entity.City;
+import org.example.lablinkbackend.domain.publication.model.dto.Publication;
+import org.example.lablinkbackend.domain.publication.model.dto.PublicationAuthor;
 import org.example.lablinkbackend.domain.tags.model.entity.Tag;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
-import org.hibernate.annotations.SoftDelete;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "users")
@@ -72,6 +75,10 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<CareerExperience> career;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private List<PublicationAuthor> publications = new ArrayList<>();
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
@@ -81,5 +88,11 @@ public class User {
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
+    }
+
+    public List<Publication> getAuthorPublications() {
+        return publications.stream()
+                .map(PublicationAuthor::getPublication)
+                .collect(Collectors.toList());
     }
 }

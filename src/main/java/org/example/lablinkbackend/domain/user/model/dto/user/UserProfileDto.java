@@ -3,6 +3,7 @@ package org.example.lablinkbackend.domain.user.model.dto.user;
 import lombok.Data;
 import org.example.lablinkbackend.domain.career.model.dto.CareerDto;
 import org.example.lablinkbackend.domain.education.model.dto.EducationDto;
+import org.example.lablinkbackend.domain.publication.model.dto.PublicationResponseDto;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -21,6 +22,7 @@ public class UserProfileDto {
     private Set<String> tags;
     private List<EducationDto> education;
     private List<CareerDto> career;
+    private List<PublicationResponseDto> publications;
 
     private boolean isMyProfile;
 }

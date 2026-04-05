@@ -3,6 +3,7 @@ package org.example.lablinkbackend.domain.user.model.dto.auth;
 import lombok.Data;
 import org.example.lablinkbackend.domain.career.model.dto.CareerDto;
 import org.example.lablinkbackend.domain.education.model.dto.EducationDto;
+import org.example.lablinkbackend.domain.publication.model.dto.PublicationRequestDto;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -22,4 +23,5 @@ public class SignUpRequest {
     private List<EducationDto> education;
     private List<CareerDto> career;
     private Set<String> tags;
+    private List<PublicationRequestDto> publications;
 }
