@@ -90,3 +90,40 @@ CREATE TABLE user_tags (
 
 -- Индекс для поиска людей по тегу
 CREATE INDEX idx_user_tags_tag ON user_tags(tag_id);
+
+-- =====================================================
+-- ПУБЛИКАЦИИ
+-- =====================================================
+CREATE TABLE publications (
+                              id BIGSERIAL PRIMARY KEY,
+                              doi VARCHAR(255) UNIQUE,
+                              journal_title VARCHAR(255),
+                              source VARCHAR(255),
+                              title VARCHAR(255) NOT NULL,
+                              description TEXT,
+                              url VARCHAR(255),
+                              year INTEGER,
+                              created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                              updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- =====================================================
+-- СВЯЗЬ ПУБЛИКАЦИЙ С АВТОРАМИ
+-- =====================================================
+-- Поддерживает соавторство, порядок авторов и ответственных авторов
+CREATE TABLE publication_authors (
+                                     publication_id BIGINT NOT NULL,
+                                     user_id BIGINT NOT NULL,
+                                     author_order INTEGER NOT NULL,
+                                     is_corresponding_author BOOLEAN DEFAULT FALSE,
+                                     PRIMARY KEY (publication_id, user_id),
+                                     CONSTRAINT fk_pub_auth_publication FOREIGN KEY (publication_id) REFERENCES publications(id) ON DELETE CASCADE,
+                                     CONSTRAINT fk_pub_auth_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- Индексы для публикаций и авторов
+CREATE INDEX idx_publications_year ON publications(year);
+CREATE INDEX idx_publications_doi ON publications(doi);
+CREATE INDEX idx_pub_authors_publication ON publication_authors(publication_id);
+CREATE INDEX idx_pub_authors_user ON publication_authors(user_id);
+CREATE INDEX idx_pub_authors_order ON publication_authors(publication_id, author_order);

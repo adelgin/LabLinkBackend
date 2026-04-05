@@ -4,6 +4,9 @@ import org.example.lablinkbackend.common.exception.ResourceNotFoundException;
 import org.example.lablinkbackend.config.security.auth.UserDetailsImpl;
 import org.example.lablinkbackend.domain.career.model.dto.CareerDto;
 import org.example.lablinkbackend.domain.education.model.dto.EducationDto;
+import org.example.lablinkbackend.domain.publication.model.dto.AuthorDto;
+import org.example.lablinkbackend.domain.publication.model.dto.PublicationAuthor;
+import org.example.lablinkbackend.domain.publication.model.dto.PublicationResponseDto;
 import org.example.lablinkbackend.domain.tags.model.entity.Tag;
 import org.example.lablinkbackend.domain.user.model.dto.user.UserProfileDto;
 import org.example.lablinkbackend.domain.user.model.entity.User;
@@ -86,6 +89,46 @@ public class UserService implements UserDetailsService {
                 return carDto;
             }).collect(Collectors.toList());
             dto.setCareer(careerDtos);
+        }
+
+        if (user.getAuthorPublications() != null) {
+            List<PublicationResponseDto> publicationDtos = user.getAuthorPublications().stream()
+                .map(publication -> {
+                PublicationResponseDto pubDto = new PublicationResponseDto();
+                pubDto.setId(publication.getId());
+                pubDto.setDoi(publication.getDoi());
+                pubDto.setJournalTitle(publication.getJournalTitle());
+                pubDto.setSource(publication.getSource());
+                pubDto.setTitle(publication.getTitle());
+                pubDto.setDescription(publication.getDescription());
+                pubDto.setUrl(publication.getUrl());
+                pubDto.setYear(publication.getYear());
+
+                if (publication.getAuthors() != null) {
+                    List<AuthorDto> authorDtos = publication.getAuthors().stream()
+                            .map(publicationAuthor -> {
+                                AuthorDto authorDto = new AuthorDto();
+                                User authorUser = publicationAuthor.getUser();
+                                if (authorUser != null) {
+                                    authorDto.setUserId(authorUser.getId());
+                                    authorDto.setFirstName(authorUser.getFirstName());
+                                    authorDto.setLastName(authorUser.getLastName());
+                                    authorDto.setAuthorOrder(publicationAuthor.getAuthorOrder());
+                                    authorDto.setIsCorrespondingAuthor(publicationAuthor.getIsCorrespondingAuthor());
+                                }
+                                authorDto.setAuthorOrder(publicationAuthor.getAuthorOrder());
+                                authorDto.setIsCorrespondingAuthor(publicationAuthor.getIsCorrespondingAuthor());
+                                return authorDto;
+                            })
+                            .collect(Collectors.toList());
+                    pubDto.setAuthors(authorDtos);
+                }
+
+                return pubDto;
+            })
+            .toList();
+
+            dto.setPublications(publicationDtos);
         }
 
         return dto;

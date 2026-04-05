@@ -68,7 +68,15 @@ public class SecurityConfigurator {
                         .requestMatchers(
                                     "/v3/api-docs/**",
                                     "/swagger-ui/**",
-                                    "/swagger-ui.html"
+                                    "/swagger-ui.html",
+                                    "/api/integration/full-profile/",
+                                    "/api/auth/signup",
+                                    "/api/auth/signin",
+                                    "/api/city/all",
+                                    "/api/organization/all_educational",
+                                    "/api/organization/all",
+                                    "/api/tags/all",
+                                    "/api/integration/full-profile/**"
                                 ).permitAll()
                         .requestMatchers("/auth/**").permitAll()
 //                        .requestMatchers(HttpMethod.GET, "/api/users/**").permitAll()

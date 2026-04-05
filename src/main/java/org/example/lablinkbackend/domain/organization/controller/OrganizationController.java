@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/organization")
+@RequestMapping("api/organization")
 public class OrganizationController {
     private final OrganizationService organizationService;
 
