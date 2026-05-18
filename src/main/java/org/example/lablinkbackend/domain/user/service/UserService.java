@@ -4,21 +4,26 @@ import org.example.lablinkbackend.common.exception.ResourceNotFoundException;
 import org.example.lablinkbackend.config.security.auth.UserDetailsImpl;
 import org.example.lablinkbackend.domain.career.model.dto.CareerDto;
 import org.example.lablinkbackend.domain.education.model.dto.EducationDto;
+import org.example.lablinkbackend.domain.feed.model.dto.FeedContextDto;
 import org.example.lablinkbackend.domain.publication.model.dto.AuthorDto;
 import org.example.lablinkbackend.domain.publication.model.dto.PublicationAuthor;
 import org.example.lablinkbackend.domain.publication.model.dto.PublicationResponseDto;
 import org.example.lablinkbackend.domain.tags.model.entity.Tag;
+import org.example.lablinkbackend.domain.user.model.dto.user.UserCardDto;
 import org.example.lablinkbackend.domain.user.model.dto.user.UserProfileDto;
 import org.example.lablinkbackend.domain.user.model.entity.User;
 import org.example.lablinkbackend.domain.user.repository.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -46,6 +51,7 @@ public class UserService implements UserDetailsService {
         String currentAuthUsername = Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getName();
 
         UserProfileDto dto = new UserProfileDto();
+        dto.setId(user.getId());
         dto.setUsername(user.getUsername());
         dto.setFirstName(user.getFirstName());
         dto.setLastName(user.getLastName());
@@ -132,5 +138,90 @@ public class UserService implements UserDetailsService {
         }
 
         return dto;
+    }
+
+    public User getUserById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
+    }
+
+    /**
+     * Получает контекст для формирования ленты (подписки, теги, группы)
+     */
+    @Transactional(readOnly = true)
+    public FeedContextDto getFeedContext(Long userId) {
+        User user = getUserById(userId);
+
+        List<Long> followingIds = user.getFollowing().stream()
+                .map(User::getId)
+                .collect(Collectors.toList());
+
+        List<Integer> tagIds = user.getTags().stream()
+                .map(Tag::getId)
+                .collect(Collectors.toList());
+        List<Long> groupIds = List.of();
+
+        return new FeedContextDto(userId, followingIds, tagIds, groupIds);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<UserCardDto> searchUsers(Long currentUserId, String query, Pageable pageable) {
+        User me = userRepository.findById(currentUserId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        Set<String> myDois = me.getPublications().stream()
+                .map(pa -> pa.getPublication().getDoi())
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+
+        List<User> candidates = userRepository.findUsersForSearch(currentUserId,
+                (query != null && !query.isEmpty()) ? query.toLowerCase() : null);
+
+        List<UserCardDto> results = candidates.stream()
+                .map(candidate -> {
+                    double score = 0;
+
+                    long commonArticles = candidate.getPublications().stream()
+                            .map(pa -> pa.getPublication().getDoi())
+                            .filter(doi -> doi != null && myDois.contains(doi))
+                            .count();
+                    score += commonArticles * 100;
+
+                    boolean sameEdu = candidate.getEducation().stream()
+                            .anyMatch(ce -> me.getEducation().stream()
+                                    .anyMatch(meEdu -> meEdu.getOrganization().getId().equals(ce.getOrganization().getId())));
+                    if (sameEdu) score += 30;
+
+                    Set<String> myTagNames = me.getTags().stream().map(Tag::getName).collect(Collectors.toSet());
+                    Set<String> commonTags = candidate.getTags().stream()
+                            .map(Tag::getName)
+                            .filter(myTagNames::contains)
+                            .collect(Collectors.toSet());
+                    score += commonTags.size() * 10;
+
+                    UserCardDto dto = new UserCardDto();
+                    dto.setId(candidate.getId());
+                    dto.setUsername(candidate.getUsername());
+                    dto.setFirstName(candidate.getFirstName());
+                    dto.setLastName(candidate.getLastName());
+                    dto.setRecommendationScore(score);
+                    dto.setCommonTags(commonTags);
+
+                    if (candidate.getCity() != null) dto.setCityName(candidate.getCity().getName());
+
+                    candidate.getEducation().stream().findFirst().ifPresent(edu -> {
+                        dto.setOrganizationName(edu.getOrganization().getName());
+                    });
+
+                    return dto;
+                })
+                .sorted(Comparator.comparing(UserCardDto::getRecommendationScore).reversed())
+                .collect(Collectors.toList());
+
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), results.size());
+
+        if (start > results.size()) return new PageImpl<>(new ArrayList<>(), pageable, results.size());
+        return new PageImpl<>(results.subList(start, end), pageable, results.size());
     }
 }

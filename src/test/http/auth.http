@@ -33,7 +33,7 @@ Content-Type: application/json
 }
 
 ### Авторизация
-POST http://localhost:8081/auth/signin
+POST http://localhost:8081/api/auth/signin
 Content-Type: application/json
 
 {

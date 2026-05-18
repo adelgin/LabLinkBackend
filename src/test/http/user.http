@@ -3,5 +3,5 @@ GET http://localhost:8081/api/users/ivan_test_user
 Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJpdmFuX3Rlc3RfdXNlciIsImlhdCI6MTc3NDc5MDc0NCwiZXhwIjoxNzc0NzkwODA0fQ.BYpIuVbo83sm5I5jSR6cfim8KNq5Bdw2qwN7xQz1GQY
 
 ###
-GET http://localhost:8081/api/v1/integration/full-profile/0000-0003-0066-7465
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJpdmFuX3NjaWVuY2UiLCJpYXQiOjE3NzQ0NzE2ODgsImV4cCI6MTc3NDQ3MTc0OH0.dfCC0RSdmfspIC69At2d9hwtnOs-HyUuU_2HRQqqi-U
+GET http://localhost:8081/api/integration/full-profile/0000-0003-0066-7465
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtvbGFzaGEiLCJpYXQiOjE3NzY5Nzk1NDEsImV4cCI6MTc3NzA2NTk0MX0.Oh3rh3Ya6gPejdxEzPv7r6pMoE19tRwIdIMcaFyzpGM

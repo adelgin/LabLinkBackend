@@ -1,10 +1,12 @@
 package org.example.lablinkbackend.domain.user.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.ToString;
 import org.example.lablinkbackend.domain.career.model.entity.CareerExperience;
 import org.example.lablinkbackend.domain.education.model.entity.Education;
+import org.example.lablinkbackend.domain.feed.model.entity.Post;
 import org.example.lablinkbackend.domain.geo.model.entity.City;
 import org.example.lablinkbackend.domain.publication.model.dto.Publication;
 import org.example.lablinkbackend.domain.publication.model.dto.PublicationAuthor;
@@ -78,6 +80,16 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @ToString.Exclude
     private List<PublicationAuthor> publications = new ArrayList<>();
+
+    @OneToMany(mappedBy = "author")
+    @JsonIgnore
+    private List<Post> posts;
+
+    @ManyToMany
+    @JoinTable(name = "user_subscriptions",
+            joinColumns = @JoinColumn(name = "follower_id"),
+            inverseJoinColumns = @JoinColumn(name = "target_id"))
+    private Set<User> following;
 
     @PrePersist
     protected void onCreate() {

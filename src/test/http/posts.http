@@ -1,0 +1,25 @@
+@host=http://localhost:8081
+
+### 1. Создание поста
+POST {{host}}/api/v1/posts
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJpdmFuX3Rlc3RfdXNlciIsImlhdCI6MTc3NTQyMzk4NiwiZXhwIjoxNzc1NDI0MDQ2fQ.REqYZKBGtbymRKnZU2qck1CJHO0xqTNc_O7AU-NQQ14
+Content-Type: application/json
+
+{
+  "content": "Мой первый научный пост в LabLink! #science #kfu",
+  "fileUrls": [
+    "https://storage.yandexcloud.net/lablink/images/photo1.jpg"
+  ]
+}
+
+> {% client.global.set("last_post_id", response.body.id); %}
+
+### 2. Получение постов пользователя (Стена)
+# Замени 1 на ID своего пользователя
+GET {{host}}/api/v1/posts/user/2?page=0&size=5
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJpdmFuX3Rlc3RfdXNlciIsImlhdCI6MTc3NTQyMzY2MCwiZXhwIjoxNzc1NDIzNzIwfQ.a_nL9DWO62hmjxW-vk6h2cPI2NJD6sgduBjGuC67D_I
+
+
+###
+GET http://localhost:8081/api/users/search?query=&size=20
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJpdmFuX3Rlc3RfdXNlciIsImlhdCI6MTc3NjcyMDQyMywiZXhwIjoxNzc2ODA2ODIzfQ.2WjABv_qOwJ13np_xVS5rBytSfZxe8G6jljjkT4Xdfw

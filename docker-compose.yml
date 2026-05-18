@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: lablink-postgres
+    environment:
+      POSTGRES_DB: testingdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d testingdb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - lablink-network
+
+  backend:
+    build: .
+    container_name: lablink-backend
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/testingdb
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      SERVER_PORT: 8081
+      SPRING_JPA_HIBERNATE_DDL_AUTO: none
+      SPRING_FLYWAY_ENABLED: "true"
+
+      KEYCLOAK_TOKEN_URL: http://host.docker.internal:8085/realms/lablink/protocol/openid-connect/token
+
+      LABLINK_APP_SECRET: agsucydhcnsdcjhsdkajmskaosjdasjicjasiocjaijcsjaiodjiasjdkjasdjioasjdoajsdiaosdajdianc
+      LABLINK_APP_EXPIRATION: "86400000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - lablink-network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+
+networks:
+  lablink-network:

@@ -5,57 +5,61 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor; // Добавь эту зависимость
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import java.io.File;
 import java.io.IOException;
 
 @Component
+@RequiredArgsConstructor // Это создаст конструктор для финальных полей
 public class TokenFilter extends OncePerRequestFilter {
-    private JwtCore jwtCore;
-    private UserDetailsService userDetailsService;
+
+    private final JwtCore jwtCore; // Поля должны быть final для lombok
+    private final UserDetailsService userDetailsService;
 
     @Override
     protected void doFilterInternal(
             HttpServletRequest request,
             HttpServletResponse response,
             FilterChain filterChain
-    ) throws ServletException, IOException
-    {
-        String jwt = null;
-        String username = null;
-        UserDetails userDetails = null;
-        UsernamePasswordAuthenticationToken auth = null;
+    ) throws ServletException, IOException {
 
         try {
             String headerAuth = request.getHeader("Authorization");
             if (headerAuth != null && headerAuth.startsWith("Bearer ")) {
-                jwt = headerAuth.substring(7);
-            }
-            if (jwt != null) {
-                try {
-                    username = jwtCore.getNameFromJwt(jwt);
-                } catch (ExpiredJwtException e) {
-                    // TODO
-                }
+                String jwt = headerAuth.substring(7);
+
+                // 1. Проверяем токен через jwtCore (добавь метод валидации, если его нет)
+                String username = jwtCore.getNameFromJwt(jwt);
 
                 if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                    userDetails = userDetailsService.loadUserByUsername(username);
-                    auth = new UsernamePasswordAuthenticationToken(
+                    UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+                    // 2. ВАЖНО: передаем userDetails.getAuthorities() третьим параметром!
+                    UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
                             userDetails,
-                            null
+                            null,
+                            userDetails.getAuthorities()
                     );
+
+                    auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+                    // 3. Кладем в контекст
                     SecurityContextHolder.getContext().setAuthentication(auth);
                 }
             }
+        } catch (ExpiredJwtException e) {
+            logger.warn("JWT Token expired");
         } catch (Exception e) {
-            // TODO
+            logger.error("Authentication error: ", e);
         }
+
         filterChain.doFilter(request, response);
     }
 }
