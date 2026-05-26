@@ -36,4 +36,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "u.username::text ILIKE '%' || :query || '%')",
             nativeQuery = true)
     List<User> findUsersForSearch(@Param("currentUserId") Long currentUserId, @Param("query") String query);
+
+    @Query("SELECT f.id FROM User u JOIN u.following f WHERE u.id = :userId")
+    List<Long> findFollowingIdsByUserId(@Param("userId") Long userId);
+
+    @Query("SELECT t.id FROM User u JOIN u.tags t WHERE u.id = :userId")
+    List<Integer> findTagIdsByUserId(@Param("userId") Long userId);
 }

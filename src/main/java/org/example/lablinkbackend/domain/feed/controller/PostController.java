@@ -11,9 +11,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/posts")
@@ -24,12 +28,15 @@ public class PostController {
 
     @Operation(
             summary = "Создать пост",
-            description = "Создает пост"
+            description = "Создает пост с возможностью прикрепления файлов"
     )
-    @PostMapping
-    public ResponseEntity<PostResponseDto> createPost(@RequestBody PostRequestDto dto,
-                                           @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return ResponseEntity.ok(postService.createPost(dto, userDetails.getId()));
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<PostResponseDto> createPost(
+            @RequestPart("post") PostRequestDto dto,
+            @RequestPart(value = "files", required = false) List<MultipartFile> files,
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+        return ResponseEntity.ok(postService.createPostWithFiles(dto, files, userDetails.getId()));
     }
 
     @Operation(
@@ -72,5 +79,18 @@ public class PostController {
 
         Long currentUserId = (userDetails != null) ? userDetails.getId() : null;
         return ResponseEntity.ok(postService.getGroupPosts(groupId, pageable, currentUserId));
+    }
+
+    @Operation(
+            summary = "Удалить вложение из поста",
+            description = "Удаляет файл-вложение из поста"
+    )
+    @DeleteMapping("/attachments/{attachmentId}")
+    public ResponseEntity<String> deleteAttachment(
+            @PathVariable Long attachmentId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+        postService.deleteAttachment(attachmentId, userDetails.getId());
+        return ResponseEntity.ok("Attachment deleted successfully");
     }
 }

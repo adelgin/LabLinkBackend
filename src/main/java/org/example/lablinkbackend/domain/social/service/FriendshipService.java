@@ -129,4 +129,16 @@ public class FriendshipService {
                 user.getCity() != null ? user.getCity().getName() : null
         );
     }
+
+    public List<FriendRequestDto> getFriends(Long userId) {
+        return friendshipRepository.findAcceptedFriends(userId).stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<FriendRequestDto> getOutgoingRequests(Long userId) {
+        return friendshipRepository.findOutgoingRequests(userId).stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
 }

@@ -107,4 +107,7 @@ public class User {
                 .map(PublicationAuthor::getPublication)
                 .collect(Collectors.toList());
     }
+
+    @Column(name = "avatar_url")
+    private String avatarUrl;
 }

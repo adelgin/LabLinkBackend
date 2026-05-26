@@ -25,4 +25,8 @@ public interface FriendshipRepository extends JpaRepository<Friendship, Friendsh
             "WHERE (f.id.userId = :currentUserId OR f.id.friendId = :currentUserId) " +
             "AND u.id != :currentUserId AND f.status = 'ACCEPTED'")
     List<User> findAcceptedFriends(@Param("currentUserId") Long currentUserId);
+
+    @Query("SELECT u FROM User u JOIN Friendship f ON u.id = f.id.friendId " +
+            "WHERE f.id.userId = :currentUserId AND f.status = 'PENDING'")
+    List<User> findOutgoingRequests(@Param("currentUserId") Long currentUserId);
 }

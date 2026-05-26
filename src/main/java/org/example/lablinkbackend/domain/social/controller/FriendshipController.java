@@ -65,4 +65,14 @@ public class FriendshipController {
     public ResponseEntity<List<FriendRequestDto>> getIncoming(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return ResponseEntity.ok(friendshipService.getIncomingRequests(userDetails.getId()));
     }
+
+    @GetMapping("/list")
+    public ResponseEntity<List<FriendRequestDto>> getFriends(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return ResponseEntity.ok(friendshipService.getFriends(userDetails.getId()));
+    }
+
+    @GetMapping("/requests/outgoing")
+    public ResponseEntity<List<FriendRequestDto>> getOutgoingRequests(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return ResponseEntity.ok(friendshipService.getOutgoingRequests(userDetails.getId()));
+    }
 }

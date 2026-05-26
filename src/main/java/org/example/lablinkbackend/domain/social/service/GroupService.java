@@ -14,6 +14,8 @@ import org.example.lablinkbackend.domain.social.repository.GroupRepository;
 import org.example.lablinkbackend.domain.user.model.entity.User;
 import org.example.lablinkbackend.domain.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import org.example.lablinkbackend.common.service.FileStorageService;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -26,6 +28,7 @@ public class GroupService {
     private final GroupRepository groupRepository;
     private final GroupMemberRepository groupMemberRepository;
     private final UserRepository userRepository;
+    private final FileStorageService fileStorageService;
 
     public GroupResponseDto createGroup(GroupRequestDto dto, Long ownerId) {
         User owner = userRepository.findById(ownerId)
@@ -127,5 +130,37 @@ public class GroupService {
         membership.setJoinedAt(LocalDateTime.now());
 
         groupMemberRepository.save(membership);
+    }
+
+    @Transactional
+    public String updateGroupAvatar(Long groupId, MultipartFile file) {
+        Group group = groupRepository.findById(groupId)
+                .orElseThrow(() -> new ResourceNotFoundException("Group not found"));
+
+        if (!fileStorageService.isValidImage(file)) {
+            throw new RuntimeException("Invalid image file (max 5MB, only images)");
+        }
+
+        if (group.getAvatarUrl() != null) {
+            fileStorageService.deleteFile(group.getAvatarUrl());
+        }
+
+        String avatarUrl = fileStorageService.saveFile(file, "group_avatars", groupId);
+        group.setAvatarUrl(avatarUrl);
+        groupRepository.save(group);
+
+        return avatarUrl;
+    }
+
+    @Transactional
+    public void deleteGroupAvatar(Long groupId) {
+        Group group = groupRepository.findById(groupId)
+                .orElseThrow(() -> new ResourceNotFoundException("Group not found"));
+
+        if (group.getAvatarUrl() != null) {
+            fileStorageService.deleteFile(group.getAvatarUrl());
+            group.setAvatarUrl(null);
+            groupRepository.save(group);
+        }
     }
 }

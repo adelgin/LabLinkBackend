@@ -17,4 +17,6 @@ public class UserCardDto {
     private String organizationName;
     private Double recommendationScore;
     private Set<String> commonTags;
+    private Boolean isFriend;
+    private Boolean isSubscribed;
 }

@@ -10,8 +10,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @AllArgsConstructor
@@ -68,5 +70,27 @@ public class GroupController {
                                             @AuthenticationPrincipal UserDetailsImpl userDetails) {
         groupService.subscribeToGroup(id, userDetails.getId());
         return ResponseEntity.ok("Successfully subscribed to group");
+    }
+
+    @PostMapping("/{groupId}/avatar")
+    public ResponseEntity<?> uploadGroupAvatar(
+            @PathVariable Long groupId,
+            @RequestParam("file") MultipartFile file) {
+        try {
+            String avatarUrl = groupService.updateGroupAvatar(groupId, file);
+            return ResponseEntity.ok(Map.of(
+                    "avatarUrl", avatarUrl,
+                    "fullUrl", "http://localhost:8081" + avatarUrl,
+                    "message", "Group avatar uploaded successfully"
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @DeleteMapping("/{groupId}/avatar")
+    public ResponseEntity<?> deleteGroupAvatar(@PathVariable Long groupId) {
+        groupService.deleteGroupAvatar(groupId);
+        return ResponseEntity.ok(Map.of("message", "Group avatar deleted successfully"));
     }
 }
